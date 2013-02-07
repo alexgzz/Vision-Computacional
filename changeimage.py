@@ -42,7 +42,7 @@ im2 = ImageTk.PhotoImage(image)
 
 
 
-image2  = Image.open("gris.jpg")
+image2  = Image.open("pic.jpg")
 
 pixeles2 = image2.load()
 
@@ -50,7 +50,8 @@ for i in range (0, d[0]):
 
 	for j in range (0, d[1]):
 
-		if(pixeles2[i, j][0] <= 125):
+		pp = sum(pixeles[i,j])/3
+		if(pp <= 125):
 
 			pixeles2[i,j] = (0, 0, 0)
 
