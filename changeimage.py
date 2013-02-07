@@ -32,9 +32,9 @@ for i in range (0, d[0]):
 
   for j in range (0, d[1]):
 
-		np = min(pixeles[i, j])
+		pp = sum(pixeles[i,j])/3
 
-		pixeles[i,j] = (np, np, np)
+		pixeles[i,j] = (pp, pp, pp)
 
 image.save("gris.jpg")
 
