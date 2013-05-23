@@ -97,12 +97,41 @@ def pintar(image, text):
 		for note in info:
 			draw.text((x+5,y+a), str(note), fill="rgb(0,200,50)")
 			a += 20
+		image = muestras_cuadros(image, pixeles)
 
 	draw.line(((x, y), (x+420, y)), fill=c)
 	draw.line(((x+420, y), (x+420, y+420)), fill=c)
 	draw.line(((x, y), (x, y+420)), fill=c)
 	draw.line(((x, y+420), (x+420, y+420)), fill=c)		
 				
+	return image
+	
+def muestras_cuadros(image, pixeles):
+	x, y = 0, 130
+	x2, y2 = 0, 240
+	for i in range(0, 110):
+		for j in range(0, 110):
+			pixeles[x+i, y+j] = (r, g, b)#muestra de la referencia
+			pixeles[x2+i, y2+j] = colorpro#muestra del promedio detectado
+
+	xr, yr = 530, 75
+	xg, yg = 530, 185
+	xb, yb = 530, 260
+	for i in range(0, 55):
+		for j in range(0, 110):
+			pixeles[xr+i, yr+j] = (0, 0, r) #muestra de la referencia de rojo
+			pixeles[xg+i, yg+j] = (0, g, 0) #muestra de la referencia de verde
+			pixeles[xb+i, yb+j] = (b, 0, 0) #muestra de la referencia de azul
+
+	xr, yr = 585, 75
+	xg, yg = 585, 185
+	xb, yb = 585, 260
+	for i in range(0, 55):
+		for j in range(0, 110):
+			pixeles[xr+i, yr+j] = (0, 0, colorpro[0]) #muestra del promedio de rojo
+			pixeles[xg+i, yg+j] = (0, colorpro[0], 0) #muestra del promedio de verde
+			pixeles[xb+i, yb+j] = (colorpro[0], 0, 0) #muestra del promedio de azul
+			
 	return image
 
 def color_test(image):
@@ -173,7 +202,7 @@ def color_test(image):
 	print "Rojo : ", "%.2f" % var[2], "%", notas[2]
 	result.append("Rojo: " +str("%.2f" % var[2]) +"%" +" "+ str(notas[2]))
 
-	return result	
+	return result, colorp	
 
 def detectar_objeto(image): #checa los valores de los contornos dentro del recuadro
 	pixeles = image.load()
@@ -213,6 +242,7 @@ r = int(argv[1])
 g = int(argv[2])
 b = int(argv[3])
 colorref = [r, g, b]
+colorpro = ()
 tolerancia = float(argv[4])
 
 while True:
@@ -240,7 +270,7 @@ while True:
     
     if(detect == 1):
     	t1 = time.time()
-    	info = color_test(p_img)
+    	info, colorpro = color_test(p_img)
     	p_img = pintar(p_img, 1)
     	t2 = time.time()
     #print "Tiempo de procesamiento", t2-t1
