@@ -3,9 +3,8 @@ import Image, ImageDraw
 from sys import argv
 import time
 
-
 def filtrom(image):
-  pixeles = image.load()
+	pixeles = image.load()
 	d = image.size
 	for i in range(d[0]):
 		for j in range(d[1]):
@@ -30,6 +29,7 @@ def filtrom(image):
 	#image.save(img2)
 	return image
 
+
 def diferencia(image, image2):#filtrom, gris
 	pixeles1 = image.load()
 	pixeles2 = image2.load()
@@ -39,7 +39,7 @@ def diferencia(image, image2):#filtrom, gris
 	for i in range(d[0]):
 		for j in range(d[1]):
 			dif = (pixeles1[i,j][0]) - (pixeles2[i,j][0])
-	
+
 			if dif >20:	
 
 				pixeles2[i,j] = (255, 255, 255)
@@ -51,17 +51,19 @@ def diferencia(image, image2):#filtrom, gris
 	#image2.save("esq_"+img)	
 	return esquinas
 
+
 def grises(image):
 	pixeles = image.load()
-
 	d = image.size
 	#print "dimensiones: ", d
 	for i in range (0, d[0]):
 		for j in range (0, d[1]):
+ 
 			pp = sum(pixeles[i,j])/3
 			pixeles[i,j] = (pp, pp, pp)
-					
+	
 	return image
+
 
 def bgr_to_rgb(image):
 	pixeles = image.load()
@@ -70,7 +72,7 @@ def bgr_to_rgb(image):
 		for j in range(d[1]):
 			(b, g, r) = pixeles[i, j]
 			pixeles[i, j] = (r, g, b)
-		
+
 	return image
 
 def rgb_to_bgr(image):
@@ -80,7 +82,7 @@ def rgb_to_bgr(image):
 		for j in range(d[1]):
 			(r, g, b) = pixeles[i, j]
 			pixeles[i, j] = (b, g, r)
-		
+
 	return image
 
 def pintar(image, text):
@@ -89,7 +91,7 @@ def pintar(image, text):
 	x = (d[0]-420)/2#110
 	y = (d[1]-420)/2#30
 	draw = ImageDraw.Draw(image)
-	
+
 	c = "rgb(0,0,255)"
 	a=10	
 	if(text==1):
@@ -103,9 +105,9 @@ def pintar(image, text):
 	draw.line(((x+420, y), (x+420, y+420)), fill=c)
 	draw.line(((x, y), (x, y+420)), fill=c)
 	draw.line(((x, y+420), (x+420, y+420)), fill=c)		
-				
+
 	return image
-	
+
 def muestras_cuadros(image, pixeles):
 	x, y = 0, 130
 	x2, y2 = 0, 240
@@ -131,14 +133,12 @@ def muestras_cuadros(image, pixeles):
 			pixeles[xr+i, yr+j] = (0, 0, colorpro[0]) #muestra del promedio de rojo
 			pixeles[xg+i, yg+j] = (0, colorpro[0], 0) #muestra del promedio de verde
 			pixeles[xb+i, yb+j] = (colorpro[0], 0, 0) #muestra del promedio de azul
-			
+
 	return image
 
 def color_test(image):
 	#image = bgr_to_rgb(image)
-
 	d = image.size
-
 	pix = image.load()
 	x = (d[0]-420)/2#110
 	y = (d[1]-420)/2#30
@@ -160,9 +160,10 @@ def color_test(image):
 	vp = (sum(verdes))/(len(verdes))
 	ap = (sum(azules))/(len(azules))
 
+	#global colorp
 	colorp = (rp, vp, ap)
-
 	#print "color pixel 1 =", pix[0,0]
+
 	#image = rgb_to_bgr(image)#rgb a bgr		
 
 	print "\nColor promedio =", colorp
@@ -188,8 +189,8 @@ def color_test(image):
 				notas.append("por encima de la referencia y pasa la prueba")
 			else:
 				notas.append("por encima de la referencia y no pasa la prueba")
-
 	result = []
+
 	print "Variaciones del promedio respecto a la referencia:\n"
 	result.append("Variaciones del promedio respecto a la referencia:")
 
@@ -202,12 +203,11 @@ def color_test(image):
 	print "Rojo : ", "%.2f" % var[2], "%", notas[2]
 	result.append("Rojo: " +str("%.2f" % var[2]) +"%" +" "+ str(notas[2]))
 
-	return result, colorp	
+	return result, colorp
 
 def detectar_objeto(image): #checa los valores de los contornos dentro del recuadro
 	pixeles = image.load()
 	d = image.size
-
 	x = (d[0]-420)/2#110
 	y = (d[1]-420)/2#30
 	x2 = x+420
@@ -229,9 +229,10 @@ def detectar_objeto(image): #checa los valores de los contornos dentro del recua
 		vs.append(sum((v1,v2,v3))/3)
 
 	detect = 0
-	if(sum(vs)/len(vs) <= 10):
+	#if(p1==p2 or p1==p3 or p1==p4 or p1==p5 or p2==p3 or p2==p4 or p2==p5 or p3==p4 or p3==p5 or p4==p5):
+	if(sum(vs)/len(vs) <= 5):
 		detect = 1
-	
+
 	return detect			
 	
 cv.NamedWindow("camera", 1)
@@ -245,35 +246,43 @@ colorref = [r, g, b]
 colorpro = ()
 tolerancia = float(argv[4])
 
+tiempos = open("tiempos.txt", "w")
+
 while True:
     img = cv.QueryFrame(capture)
     #cv.SaveImage("BGR.jpg", img)
     #gray = cv.CreateImage((img.width,img.height), 8, 1)
     #cv.CvtColor(img, gray, cv.CV_BGR2GRAY)#escala de grises
     #cv.CvtColor(img, img, cv.CV_BGR2RGB)#bgr a rgb
+
     p_img = Image.fromstring("RGB", cv.GetSize(img), img.tostring()) #imagen pil
     #gr_img = Image.fromstring("RGB", cv.GetSize(img), img.tostring())
-    
+   
     #p_img = bgr_to_rgb(p_img)#convertir de formato bgr a rgb
     #p_img.save("RGB.jpg")
-    
-    
+
     #p_img = grises(p_img)#pasar a escala de grises
 
     #fm_img = filtrom(gr_img)#aplicar filtro mediano
 
     #esquinas = diferencia(gr_img, fm_img)
-       
+    
+    #info = ["Rojo 52% debajo de la referecia y no pasa","Verde 13% debajo de la referecia y no pasa","Azul 11% debajo de la referecia y no pasa"]
     p_img = pintar(p_img, 0)
 
     detect = detectar_objeto(p_img)
-    
+    t0, t1 = 0, 0
+
     if(detect == 1):
-    	t1 = time.time()
+   	t0 = time.time()
     	info, colorpro = color_test(p_img)
     	p_img = pintar(p_img, 1)
-    	t2 = time.time()
-    #print "Tiempo de procesamiento", t2-t1
+    	t1 = time.time()
+
+    tf = t1 - t0
+    #print "Tiempo de procesamiento", tf
+    if(tf > 0.0):
+    	tiempos.write( str("%.2f" % tf)+"\n" )
 
     #p_img = rgb_to_bgr(p_img)#rgb a bgr
 
@@ -281,7 +290,9 @@ while True:
     cv.SetData(cv_img, p_img.tostring())
     #cv.CvtColor(cv_img, cv_img, cv.CV_RGB2BGR)#rgb a bgr
     #cv.SaveImage("FIN.jpg", cv_img)
-    
+
     cv.ShowImage("camera", cv_img)
     if cv.WaitKey(10) == 27:
+    	tiempos.close()
         break
+      
